@@ -29,6 +29,7 @@ import {
   Upload,
   Shield,
   BarChart3,
+  Eye,
 } from "lucide-react"
 import { getCurrentUser } from "@/lib/auth"
 import { getActivitiesByStudent, getCertificatesByStudent } from "@/lib/data"
@@ -57,6 +58,8 @@ export default function StudentDashboard() {
   const [certificates] = useState(() => getCertificatesByStudent("CS2021001"))
   const [showCertificateDialog, setShowCertificateDialog] = useState(false)
   const [showResumeBuilder, setShowResumeBuilder] = useState(false)
+  const [showResumePreview, setShowResumePreview] = useState(false)
+  const [generatedResume, setGeneratedResume] = useState<{html: string, template: any} | null>(null)
   const [certificateForm, setCertificateForm] = useState({
     title: "",
     description: "",
@@ -121,6 +124,10 @@ export default function StudentDashboard() {
     window.location.href = "/dashboard/student/results"
   }
 
+  const handleViewResumes = () => {
+    window.location.href = "/dashboard/student/resumes"
+  }
+
   const handleNavigateToSearch = () => {
     window.location.href = "/search"
   }
@@ -146,27 +153,28 @@ export default function StudentDashboard() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
       {/* Header */}
-      <header className="bg-slate-800/50 border-b border-slate-700 px-6 py-4">
+      <header className="bg-slate-800/50 border-b border-slate-700 px-4 md:px-6 py-4">
         <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-2 md:space-x-4">
             <div className="flex items-center space-x-2">
-              <BookOpen className="h-8 w-8 text-blue-500" />
-              <h1 className="text-xl font-bold text-white">Smart Student Hub</h1>
+              <BookOpen className="h-6 w-6 md:h-8 md:w-8 text-blue-500" />
+              <h1 className="text-lg md:text-xl font-bold text-white hidden sm:block">Smart Student Hub</h1>
+              <h1 className="text-lg font-bold text-white sm:hidden">SSH</h1>
             </div>
           </div>
-          <div className="flex items-center space-x-4">
-            <Button variant="ghost" size="sm" className="text-slate-300 hover:text-white" onClick={handleNavigateToSearch}>
+          <div className="flex items-center space-x-2 md:space-x-4">
+            <Button variant="ghost" size="sm" className="text-slate-300 hover:text-white hidden sm:inline-flex" onClick={handleNavigateToSearch}>
               <Search className="h-4 w-4" />
             </Button>
             <Button variant="ghost" size="sm" className="text-slate-300 hover:text-white" onClick={() => alert('Notifications feature - would show recent updates and announcements')}>
               <Bell className="h-4 w-4" />
             </Button>
-            <Button variant="ghost" size="sm" className="text-slate-300 hover:text-white" onClick={() => alert('Settings page - would allow profile and preference updates')}>
+            <Button variant="ghost" size="sm" className="text-slate-300 hover:text-white hidden md:inline-flex" onClick={() => alert('Settings page - would allow profile and preference updates')}>
               <Settings className="h-4 w-4" />
             </Button>
-            <Avatar className="h-8 w-8">
+            <Avatar className="h-6 w-6 md:h-8 md:w-8">
               <AvatarImage src={user.profileImage || "/placeholder.svg"} alt={user.name} />
-              <AvatarFallback className="bg-blue-600 text-white">
+              <AvatarFallback className="bg-blue-600 text-white text-xs md:text-sm">
                 {user.name
                   .split(" ")
                   .map((n) => n[0])
@@ -180,28 +188,30 @@ export default function StudentDashboard() {
         </div>
       </header>
 
-      <div className="p-6 space-y-6">
+      <div className="p-4 md:p-6 space-y-6">
         {/* Welcome Section */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-3xl font-bold text-white mb-2">Welcome back, {user.name}!</h2>
-            <p className="text-slate-400">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+          <div className="flex-1">
+            <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">Welcome back, {user.name}!</h2>
+            <p className="text-slate-400 text-sm md:text-base">
               Student ID: {(user as any).studentId} • {(user as any).department}
             </p>
           </div>
-          <div className="flex space-x-3">
-            <Button className="bg-blue-600 hover:bg-blue-700" onClick={handleAddActivity}>
-              <Plus className="h-4 w-4 mr-2" />
-              Add Activity
+          <div className="flex flex-wrap gap-2 lg:gap-3">
+            <Button className="bg-blue-600 hover:bg-blue-700 text-xs md:text-sm" size="sm" onClick={handleAddActivity}>
+              <Plus className="h-4 w-4 mr-1 md:mr-2" />
+              <span className="hidden sm:inline">Add Activity</span>
+              <span className="sm:hidden">Add</span>
             </Button>
             <Dialog open={showCertificateDialog} onOpenChange={setShowCertificateDialog}>
               <DialogTrigger asChild>
-                <Button className="bg-green-600 hover:bg-green-700">
-                  <Upload className="h-4 w-4 mr-2" />
-                  Upload Certificate
+                <Button className="bg-green-600 hover:bg-green-700 text-xs md:text-sm" size="sm">
+                  <Upload className="h-4 w-4 mr-1 md:mr-2" />
+                  <span className="hidden sm:inline">Upload Certificate</span>
+                  <span className="sm:hidden">Upload</span>
                 </Button>
               </DialogTrigger>
-              <DialogContent className="bg-slate-800 border-slate-700 text-white max-w-md">
+              <DialogContent className="bg-slate-800 border-slate-700 text-white max-w-md mx-4 sm:mx-auto max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                   <DialogTitle>Upload Certificate</DialogTitle>
                   <DialogDescription className="text-slate-400">
@@ -210,29 +220,29 @@ export default function StudentDashboard() {
                 </DialogHeader>
                 <form onSubmit={handleCertificateSubmit} className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="title">Certificate Title</Label>
+                    <Label htmlFor="title" className="text-sm md:text-base">Certificate Title</Label>
                     <Input
                       id="title"
                       value={certificateForm.title}
                       onChange={(e) => setCertificateForm(prev => ({ ...prev, title: e.target.value }))}
-                      className="bg-slate-700 border-slate-600 text-white"
+                      className="bg-slate-700 border-slate-600 text-white h-10 md:h-11 text-sm md:text-base"
                       placeholder="e.g., AWS Cloud Practitioner"
                       required
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="issuer">Issuing Organization</Label>
+                    <Label htmlFor="issuer" className="text-sm md:text-base">Issuing Organization</Label>
                     <Input
                       id="issuer"
                       value={certificateForm.issuer}
                       onChange={(e) => setCertificateForm(prev => ({ ...prev, issuer: e.target.value }))}
-                      className="bg-slate-700 border-slate-600 text-white"
+                      className="bg-slate-700 border-slate-600 text-white h-10 md:h-11 text-sm md:text-base"
                       placeholder="e.g., Amazon Web Services"
                       required
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="category">Category</Label>
+                    <Label htmlFor="category" className="text-sm md:text-base">Category</Label>
                     <Select value={certificateForm.category} onValueChange={(value) => setCertificateForm(prev => ({ ...prev, category: value }))}>
                       <SelectTrigger className="bg-slate-700 border-slate-600 text-white">
                         <SelectValue placeholder="Select category" />
@@ -282,33 +292,41 @@ export default function StudentDashboard() {
                     />
                     <p className="text-xs text-slate-400">Supported formats: PDF, JPG, PNG (Max 10MB)</p>
                   </div>
-                  <div className="flex space-x-3 pt-4">
+                  <div className="flex flex-col sm:flex-row gap-3 pt-4">
                     <Button
                       type="button"
                       variant="outline"
                       onClick={() => setShowCertificateDialog(false)}
-                      className="flex-1 border-slate-600 text-slate-300 hover:bg-slate-700"
+                      className="flex-1 border-slate-600 text-slate-300 hover:bg-slate-700 h-10 md:h-11"
                     >
                       Cancel
                     </Button>
-                    <Button type="submit" className="flex-1 bg-green-600 hover:bg-green-700">
+                    <Button type="submit" className="flex-1 bg-green-600 hover:bg-green-700 h-10 md:h-11">
                       Submit for Approval
                     </Button>
                   </div>
                 </form>
               </DialogContent>
             </Dialog>
-            <Button variant="outline" className="border-slate-600 text-slate-300 hover:bg-slate-700 bg-transparent" onClick={handleGenerateResume}>
-              <FileText className="h-4 w-4 mr-2" />
-              Generate Resume
+            <Button variant="outline" className="border-slate-600 text-slate-300 hover:bg-slate-700 bg-transparent text-xs md:text-sm" size="sm" onClick={handleGenerateResume}>
+              <FileText className="h-4 w-4 mr-1 md:mr-2" />
+              <span className="hidden sm:inline">Generate Resume</span>
+              <span className="sm:hidden">Resume</span>
             </Button>
-            <Button variant="outline" className="border-slate-600 text-slate-300 hover:bg-slate-700 bg-transparent" onClick={handleViewResults}>
-              <BarChart3 className="h-4 w-4 mr-2" />
-              View Results
+            <Button variant="outline" className="border-slate-600 text-slate-300 hover:bg-slate-700 bg-transparent text-xs md:text-sm" size="sm" onClick={handleViewResumes}>
+              <Eye className="h-4 w-4 mr-1 md:mr-2" />
+              <span className="hidden sm:inline">View Resumes</span>
+              <span className="sm:hidden">Resumes</span>
             </Button>
-            <Button variant="outline" className="border-slate-600 text-slate-300 hover:bg-slate-700 bg-transparent" onClick={handleDownloadPortfolio}>
-              <Download className="h-4 w-4 mr-2" />
-              Download Portfolio
+            <Button variant="outline" className="border-slate-600 text-slate-300 hover:bg-slate-700 bg-transparent text-xs md:text-sm" size="sm" onClick={handleViewResults}>
+              <BarChart3 className="h-4 w-4 mr-1 md:mr-2" />
+              <span className="hidden sm:inline">View Results</span>
+              <span className="sm:hidden">Results</span>
+            </Button>
+            <Button variant="outline" className="border-slate-600 text-slate-300 hover:bg-slate-700 bg-transparent text-xs md:text-sm" size="sm" onClick={handleDownloadPortfolio}>
+              <Download className="h-4 w-4 mr-1 md:mr-2" />
+              <span className="hidden sm:inline">Download Portfolio</span>
+              <span className="sm:hidden">Portfolio</span>
             </Button>
           </div>
         </div>
@@ -372,7 +390,7 @@ export default function StudentDashboard() {
               <CardDescription className="text-slate-400">Your activity submissions over time</CardDescription>
             </CardHeader>
             <CardContent>
-              <ResponsiveContainer width="100%" height={300}>
+              <ResponsiveContainer width="100%" height={250} className="md:h-[300px]">
                 <BarChart data={monthlyData}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
                   <XAxis dataKey="month" stroke="#9ca3af" />
@@ -467,7 +485,7 @@ export default function StudentDashboard() {
               ))}
             </div>
             <div className="mt-4 text-center">
-              <Button variant="outline" className="border-slate-600 text-slate-300 hover:bg-slate-700 bg-transparent">
+              <Button variant="outline" className="border-slate-600 text-slate-300 hover:bg-slate-700 bg-transparent text-sm" size="sm">
                 <FileText className="h-4 w-4 mr-2" />
                 View All Activities
               </Button>
@@ -501,22 +519,22 @@ export default function StudentDashboard() {
               ) : (
                 <>
                   {certificates.slice(0, 3).map((certificate) => (
-                    <div key={certificate.id} className="flex items-center justify-between p-4 bg-slate-700/30 rounded-lg">
+                    <div key={certificate.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-slate-700/30 rounded-lg gap-3">
                       <div className="flex items-center space-x-4">
                         <div
-                          className="w-3 h-3 rounded-full"
+                          className="w-3 h-3 rounded-full flex-shrink-0"
                           style={{
                             backgroundColor: certificate.status === "approved" ? "#10b981" : certificate.status === "pending" ? "#f59e0b" : "#ef4444"
                           }}
                         />
-                        <div>
-                          <h4 className="font-medium text-white">{certificate.title}</h4>
-                          <p className="text-sm text-slate-400">
+                        <div className="flex-1 min-w-0">
+                          <h4 className="font-medium text-white text-sm md:text-base truncate">{certificate.title}</h4>
+                          <p className="text-xs md:text-sm text-slate-400">
                             {certificate.issuer} • {new Date(certificate.dateIssued).toLocaleDateString()}
                           </p>
                         </div>
                       </div>
-                      <div className="text-right">
+                      <div className="text-left sm:text-right">
                         <Badge
                           className={
                             certificate.status === "approved"
@@ -539,7 +557,7 @@ export default function StudentDashboard() {
                       <div className="text-sm text-slate-400">
                         {approvedCertificates.length} approved • {pendingCertificates.length} pending • {totalCertificatePoints} total points
                       </div>
-                      <Button variant="outline" className="border-slate-600 text-slate-300 hover:bg-slate-700">
+                      <Button variant="outline" className="border-slate-600 text-slate-300 hover:bg-slate-700 text-sm" size="sm">
                         <Shield className="h-4 w-4 mr-2" />
                         View All Certificates
                       </Button>
@@ -597,17 +615,136 @@ export default function StudentDashboard() {
           cgpa: "8.7"
         }}
         onResumeGenerated={(resumeHtml, template) => {
-          // Handle resume generation - could save to database or show preview
+          // Handle resume generation - show preview dialog
           console.log("Resume generated:", { resumeHtml, template })
-          // Close the dialog first
+          // Close the builder dialog
           setShowResumeBuilder(false)
-          // Show success message and auto-navigate to results page
-          alert("Resume generated successfully! Redirecting to Results page...")
-          setTimeout(() => {
-            window.location.href = "/dashboard/student/results"
-          }, 1500)
+          // Store the generated resume and show preview
+          setGeneratedResume({ html: resumeHtml, template })
+          setShowResumePreview(true)
         }}
       />
+
+      {/* Resume Preview Dialog */}
+      <Dialog open={showResumePreview} onOpenChange={setShowResumePreview}>
+        <DialogContent className="bg-slate-800 border-slate-700 text-white max-w-6xl w-[95vw] max-h-[95vh] overflow-hidden">
+          <DialogHeader>
+            <DialogTitle className="text-white flex items-center">
+              <FileText className="h-5 w-5 mr-2 text-blue-500" />
+              Resume Preview - {generatedResume?.template?.name || 'Generated Resume'}
+            </DialogTitle>
+            <DialogDescription className="text-slate-400">
+              Your resume has been generated successfully. Preview it below and download as PDF.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="flex flex-col lg:flex-row gap-4 h-[75vh]">
+            {/* Preview Frame - Takes most of the space */}
+            <div className="flex-1 border border-slate-600 rounded-lg overflow-hidden bg-white">
+              <div 
+                className="w-full h-full overflow-auto p-6 text-black"
+                style={{ 
+                  fontSize: '14px',
+                  lineHeight: '1.4',
+                  fontFamily: 'Arial, sans-serif'
+                }}
+                dangerouslySetInnerHTML={{ __html: generatedResume?.html || '' }}
+              />
+            </div>
+            
+            {/* Action Buttons - Sidebar for desktop, bottom for mobile */}
+            <div className="lg:w-64 flex flex-col gap-3">
+              <div className="text-sm text-slate-400 hidden lg:block">
+                <h3 className="font-medium text-slate-300 mb-2">Download Options</h3>
+                <p className="text-xs">Choose how you want to save your resume:</p>
+              </div>
+              
+              <Button
+                onClick={() => {
+                  // Generate and download PDF
+                  const element = document.createElement('a')
+                  const file = new Blob([generatedResume?.html || ''], {type: 'text/html'})
+                  element.href = URL.createObjectURL(file)
+                  element.download = `resume-${generatedResume?.template?.name || 'generated'}-${new Date().toISOString().split('T')[0]}.html`
+                  document.body.appendChild(element)
+                  element.click()
+                  document.body.removeChild(element)
+                  alert('Resume downloaded as HTML file. You can open it in a browser and print to PDF.')
+                }}
+                className="bg-blue-600 hover:bg-blue-700"
+              >
+                <Download className="h-4 w-4 mr-2" />
+                Download HTML
+              </Button>
+              
+              <Button
+                onClick={() => {
+                  // Print to PDF functionality
+                  const printWindow = window.open('', '_blank')
+                  if (printWindow) {
+                    printWindow.document.write(`
+                      <html>
+                        <head>
+                          <title>Resume - ${generatedResume?.template?.name || 'Generated'}</title>
+                          <style>
+                            body { 
+                              font-family: Arial, sans-serif; 
+                              margin: 20px; 
+                              line-height: 1.4;
+                              font-size: 14px;
+                            }
+                            @media print { 
+                              body { margin: 10mm; }
+                              * { print-color-adjust: exact; }
+                            }
+                          </style>
+                        </head>
+                        <body>
+                          ${generatedResume?.html || ''}
+                        </body>
+                      </html>
+                    `)
+                    printWindow.document.close()
+                    setTimeout(() => {
+                      printWindow.print()
+                    }, 250)
+                  }
+                }}
+                className="bg-green-600 hover:bg-green-700"
+              >
+                <FileText className="h-4 w-4 mr-2" />
+                Print to PDF
+              </Button>
+              
+              <Button
+                variant="outline"
+                onClick={() => {
+                  navigator.clipboard.writeText(generatedResume?.html || '')
+                  alert('Resume HTML copied to clipboard!')
+                }}
+                className="border-slate-600 text-slate-300 hover:bg-slate-700"
+              >
+                <Download className="h-4 w-4 mr-2" />
+                Copy HTML
+              </Button>
+              
+              <div className="mt-auto">
+                <Button
+                  variant="outline"
+                  onClick={() => setShowResumePreview(false)}
+                  className="w-full border-slate-600 text-slate-300 hover:bg-slate-700"
+                >
+                  Close Preview
+                </Button>
+              </div>
+              
+              <div className="text-xs text-slate-500 hidden lg:block">
+                <p>💡 Tip: Use "Print to PDF" for the best quality PDF output with proper formatting.</p>
+              </div>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

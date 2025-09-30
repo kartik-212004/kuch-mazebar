@@ -201,47 +201,52 @@ export default function ResultsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-900 text-white p-6">
-      <div className="max-w-7xl mx-auto space-y-6">
+    <div className="min-h-screen bg-slate-900 text-white p-4 md:p-6">
+      <div className="max-w-7xl mx-auto space-y-4 md:space-y-6">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center space-x-4">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6 md:mb-8">
+          <div className="flex flex-col sm:flex-row sm:items-center space-y-4 sm:space-y-0 sm:space-x-4">
             <Button 
               variant="outline" 
               size="sm" 
               onClick={handleGoBack}
-              className="border-slate-600 text-slate-300 hover:bg-slate-700"
+              className="border-slate-600 text-slate-300 hover:bg-slate-700 self-start"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Dashboard
+              <span className="hidden sm:inline">Back to Dashboard</span>
+              <span className="sm:hidden">Back</span>
             </Button>
-            <div>
-              <h1 className="text-3xl font-bold">Academic Results</h1>
-              <p className="text-slate-400">Semester 6 - Computer Science & Engineering</p>
+            <div className="flex-1">
+              <h1 className="text-2xl md:text-3xl font-bold">Academic Results</h1>
+              <p className="text-slate-400 text-sm md:text-base">Semester 6 - Computer Science & Engineering</p>
             </div>
           </div>
-          <div className="flex items-center space-x-2">
+          <div className="flex flex-wrap items-center gap-2">
             <Button 
               variant="outline" 
               onClick={handleDownloadResult}
-              className="border-slate-600 text-slate-300 hover:bg-slate-700"
+              className="border-slate-600 text-slate-300 hover:bg-slate-700 text-xs md:text-sm"
+              size="sm"
             >
-              <Download className="h-4 w-4 mr-2" />
-              Download
+              <Download className="h-4 w-4 mr-1 md:mr-2" />
+              <span className="hidden sm:inline">Download</span>
+              <span className="sm:hidden">PDF</span>
             </Button>
             <Button 
               variant="outline" 
               onClick={handleShareResult}
-              className="border-slate-600 text-slate-300 hover:bg-slate-700"
+              className="border-slate-600 text-slate-300 hover:bg-slate-700 text-xs md:text-sm"
+              size="sm"
             >
-              <Share2 className="h-4 w-4 mr-2" />
-              Share
+              <Share2 className="h-4 w-4 mr-1 md:mr-2" />
+              <span className="hidden sm:inline">Share</span>
+              <span className="sm:hidden">Send</span>
             </Button>
           </div>
         </div>
 
         {/* Overall Performance Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
           <Card className="bg-slate-800/50 border-slate-700">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium text-slate-300">SGPA</CardTitle>
@@ -296,31 +301,33 @@ export default function ResultsPage() {
         </div>
 
         {/* Main Content Tabs */}
-        <Tabs defaultValue="overview" className="space-y-6">
+        <Tabs defaultValue="overview" className="space-y-4 md:space-y-6">
           <TabsList className="grid w-full grid-cols-3 bg-slate-800 border-slate-700">
             <TabsTrigger 
               value="overview" 
-              className="data-[state=active]:bg-slate-700 data-[state=active]:text-white text-slate-400"
+              className="data-[state=active]:bg-slate-700 data-[state=active]:text-white text-slate-400 text-xs md:text-sm"
             >
               Overview
             </TabsTrigger>
             <TabsTrigger 
               value="subjects" 
-              className="data-[state=active]:bg-slate-700 data-[state=active]:text-white text-slate-400"
+              className="data-[state=active]:bg-slate-700 data-[state=active]:text-white text-slate-400 text-xs md:text-sm"
             >
-              Subject Details
+              <span className="hidden sm:inline">Subject Details</span>
+              <span className="sm:hidden">Subjects</span>
             </TabsTrigger>
             <TabsTrigger 
               value="analytics" 
-              className="data-[state=active]:bg-slate-700 data-[state=active]:text-white text-slate-400"
+              className="data-[state=active]:bg-slate-700 data-[state=active]:text-white text-slate-400 text-xs md:text-sm"
             >
-              Performance Analytics
+              <span className="hidden sm:inline">Performance Analytics</span>
+              <span className="sm:hidden">Analytics</span>
             </TabsTrigger>
           </TabsList>
 
           {/* Overview Tab */}
-          <TabsContent value="overview" className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <TabsContent value="overview" className="space-y-4 md:space-y-6">
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 md:gap-6">
               {/* Grade Distribution Chart */}
               <Card className="bg-slate-800/50 border-slate-700">
                 <CardHeader>
@@ -330,7 +337,7 @@ export default function ResultsPage() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <ResponsiveContainer width="100%" height={300}>
+                  <ResponsiveContainer width="100%" height={250} className="md:h-[300px]">
                     <PieChart>
                       <Pie
                         data={gradeDistribution}
@@ -361,7 +368,7 @@ export default function ResultsPage() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <ResponsiveContainer width="100%" height={300}>
+                  <ResponsiveContainer width="100%" height={250} className="md:h-[300px]">
                     <BarChart data={subjectPerformance}>
                       <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
                       <XAxis 
@@ -386,7 +393,7 @@ export default function ResultsPage() {
           </TabsContent>
 
           {/* Subject Details Tab */}
-          <TabsContent value="subjects" className="space-y-6">
+          <TabsContent value="subjects" className="space-y-4 md:space-y-6">
             <Card className="bg-slate-800/50 border-slate-700">
               <CardHeader>
                 <CardTitle className="text-slate-200">Subject-wise Results</CardTitle>
@@ -394,66 +401,73 @@ export default function ResultsPage() {
                   Detailed marks and grades for Semester 6
                 </CardDescription>
               </CardHeader>
-              <CardContent>
-                <Table>
+              <CardContent className="overflow-x-auto">
+                <div className="min-w-[800px]">
+                  <Table>
                   <TableHeader>
                     <TableRow className="border-slate-700 hover:bg-slate-800/50">
-                      <TableHead className="text-slate-300">Subject Code</TableHead>
-                      <TableHead className="text-slate-300">Subject Name</TableHead>
-                      <TableHead className="text-slate-300">Faculty</TableHead>
-                      <TableHead className="text-slate-300">Type</TableHead>
-                      <TableHead className="text-slate-300">Credits</TableHead>
-                      <TableHead className="text-slate-300">Marks</TableHead>
-                      <TableHead className="text-slate-300">Grade</TableHead>
-                      <TableHead className="text-slate-300">Points</TableHead>
+                      <TableHead className="text-slate-300 text-xs md:text-sm">Subject Code</TableHead>
+                      <TableHead className="text-slate-300 text-xs md:text-sm">Subject Name</TableHead>
+                      <TableHead className="text-slate-300 text-xs md:text-sm hidden md:table-cell">Faculty</TableHead>
+                      <TableHead className="text-slate-300 text-xs md:text-sm">Type</TableHead>
+                      <TableHead className="text-slate-300 text-xs md:text-sm">Credits</TableHead>
+                      <TableHead className="text-slate-300 text-xs md:text-sm">Marks</TableHead>
+                      <TableHead className="text-slate-300 text-xs md:text-sm">Grade</TableHead>
+                      <TableHead className="text-slate-300 text-xs md:text-sm hidden lg:table-cell">Points</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {semesterSubjects.map((subject, index) => (
                       <TableRow key={index} className="border-slate-700 hover:bg-slate-800/30">
-                        <TableCell className="font-medium text-slate-200">{subject.code}</TableCell>
-                        <TableCell className="text-slate-300">{subject.name}</TableCell>
-                        <TableCell className="text-slate-400">{subject.faculty}</TableCell>
+                        <TableCell className="font-medium text-slate-200 text-xs md:text-sm">{subject.code}</TableCell>
+                        <TableCell className="text-slate-300 text-xs md:text-sm">{subject.name}</TableCell>
+                        <TableCell className="text-slate-400 text-xs md:text-sm hidden md:table-cell">{subject.faculty}</TableCell>
                         <TableCell>
                           <Badge 
                             variant="outline" 
-                            className={`
-                              ${subject.type === 'Theory' ? 'border-blue-500 text-blue-400' : ''}
-                              ${subject.type === 'Lab' ? 'border-green-500 text-green-400' : ''}
-                              ${subject.type === 'Project' ? 'border-purple-500 text-purple-400' : ''}
-                            `}
+                            className={`text-xs ${
+                              subject.type === 'Theory' ? 'border-blue-500 text-blue-400' : ''
+                            } ${
+                              subject.type === 'Lab' ? 'border-green-500 text-green-400' : ''
+                            } ${
+                              subject.type === 'Project' ? 'border-purple-500 text-purple-400' : ''
+                            }`}
                           >
                             {subject.type}
                           </Badge>
                         </TableCell>
-                        <TableCell className="text-slate-300">{subject.credits}</TableCell>
-                        <TableCell className="text-slate-300">
+                        <TableCell className="text-slate-300 text-xs md:text-sm">{subject.credits}</TableCell>
+                        <TableCell className="text-slate-300 text-xs md:text-sm">
                           {subject.marksObtained}/{subject.totalMarks}
                         </TableCell>
                         <TableCell>
                           <Badge 
-                            className={`
-                              ${subject.grade === 'A+' ? 'bg-green-600' : ''}
-                              ${subject.grade === 'A' ? 'bg-blue-600' : ''}
-                              ${subject.grade === 'B+' ? 'bg-yellow-600' : ''}
-                              ${subject.grade === 'B' ? 'bg-orange-600' : ''}
-                            `}
+                            className={`text-xs ${
+                              subject.grade === 'A+' ? 'bg-green-600' : ''
+                            } ${
+                              subject.grade === 'A' ? 'bg-blue-600' : ''
+                            } ${
+                              subject.grade === 'B+' ? 'bg-yellow-600' : ''
+                            } ${
+                              subject.grade === 'B' ? 'bg-orange-600' : ''
+                            }`}
                           >
                             {subject.grade}
                           </Badge>
                         </TableCell>
-                        <TableCell className="text-slate-300">{subject.gradePoints}</TableCell>
+                        <TableCell className="text-slate-300 text-xs md:text-sm hidden lg:table-cell">{subject.gradePoints}</TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
-                </Table>
+                  </Table>
+                </div>
               </CardContent>
             </Card>
           </TabsContent>
 
           {/* Analytics Tab */}
-          <TabsContent value="analytics" className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <TabsContent value="analytics" className="space-y-4 md:space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
               <Card className="bg-slate-800/50 border-slate-700">
                 <CardHeader>
                   <CardTitle className="text-slate-200">Performance Summary</CardTitle>
