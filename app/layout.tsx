@@ -5,9 +5,8 @@ import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'v0 App',
-  description: 'Created with v0',
-  generator: 'v0.app',
+  title: 'smartstudenthub',
+  description: 'A centralized digital platform for Higher Education Institutions to record, track, and showcase students’ academic, co-curricular, and extracurricular achievements in one unified profile.',
 }
 
 export default function RootLayout({
